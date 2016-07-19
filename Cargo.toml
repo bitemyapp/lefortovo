@@ -1,0 +1,8 @@
+[package]
+name = "lefortovo"
+version = "0.1.0"
+authors = ["callen"]
+
+[dependencies]
+hyper = "*"
+clap = "*"
