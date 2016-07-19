@@ -1,6 +1,9 @@
 build:
 	RUST_BACKTRACE=1 cargo build
 
+install:
+	cargo install
+
 run:
 	./target/debug/lefortovo --lang Haskell
 
