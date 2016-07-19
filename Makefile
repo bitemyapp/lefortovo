@@ -1,5 +1,5 @@
 build:
-	RUST_BACKTRACE=1 cargo build
+	cargo build
 
 install:
 	cargo install
