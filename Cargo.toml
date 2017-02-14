@@ -5,4 +5,5 @@ authors = ["callen"]
 
 [dependencies]
 hyper = "*"
+hyper-native-tls = "*"
 clap = "*"
