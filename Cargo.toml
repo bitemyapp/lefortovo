@@ -4,5 +4,5 @@ version = "0.1.0"
 authors = ["callen"]
 
 [dependencies]
-hyper = "*"
+hyper = ">= 0.10.2"
 clap = "*"
