@@ -5,4 +5,5 @@ authors = ["callen"]
 
 [dependencies]
 hyper = ">= 0.10.2"
+hyper-native-tls = "*"
 clap = "*"

@@ -1,8 +1,5 @@
 build:
-	cargo build
-
-install:
-	cargo install
+	OPENSSL_INCLUDE_DIR=/usr/local/opt/openssl/include cargo build
 
 run:
 	./target/debug/lefortovo --lang Haskell

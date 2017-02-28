@@ -1,8 +1,12 @@
 extern crate clap;
 extern crate hyper;
+extern crate hyper_native_tls;
 
 use clap::{Arg, App};
 use hyper::Client;
+use hyper::net::HttpsConnector;
+use hyper_native_tls::NativeTlsClient;
+
 use std::io::prelude::*;
 
 fn build_url(pl: &str) -> String {
@@ -11,7 +15,9 @@ fn build_url(pl: &str) -> String {
 }
 
 fn get_from_github(lang: &str) {
-    let client = Client::new();
+    let ssl = NativeTlsClient::new().unwrap();
+    let connector = HttpsConnector::new(ssl);
+    let client = Client::with_connector(connector);
     let url = build_url(lang);
     let mut res = client.get(&url[..])
         .send()
