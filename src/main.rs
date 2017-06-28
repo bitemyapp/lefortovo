@@ -1,13 +1,13 @@
 extern crate clap;
+extern crate futures;
 extern crate hyper;
-extern crate hyper_native_tls;
+extern crate hyper_tls;
+extern crate tokio_core;
 
 use clap::{Arg, App};
-use hyper::Client;
-use hyper::net::HttpsConnector;
-use hyper_native_tls::NativeTlsClient;
+use futures::{Future, Stream};
 
-use std::io::prelude::*;
+use std::str;
 
 fn build_url(pl: &str) -> String {
     format!("https://raw.githubusercontent.com/github/gitignore/master/{}.gitignore",
@@ -15,15 +15,23 @@ fn build_url(pl: &str) -> String {
 }
 
 fn get_from_github(lang: &str) {
-    let ssl = NativeTlsClient::new().unwrap();
-    let connector = HttpsConnector::new(ssl);
-    let client = Client::with_connector(connector);
-    let url = build_url(lang);
-    let mut res = client.get(&url[..])
-        .send()
-        .unwrap();
+    let mut core = tokio_core::reactor::Core::new().unwrap();
+    let handle = core.handle();
+    let client = hyper::Client::configure()
+        .connector(hyper_tls::HttpsConnector::new(4, &handle).unwrap())
+        .build(&handle);
+
+    let url = build_url(lang).parse().unwrap();
     let mut s = String::new();
-    let _ = res.read_to_string(&mut s);
+    {
+        let work = client.get(url).and_then(|res| {
+            res.body().for_each(|chunk| {
+                s.push_str(str::from_utf8(&*chunk).unwrap());
+                futures::future::ok(())
+            })
+        });
+        core.run(work).unwrap();
+    }
     println!("{}", s);
 }
 

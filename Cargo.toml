@@ -4,6 +4,8 @@ version = "0.1.0"
 authors = ["callen"]
 
 [dependencies]
-hyper = ">= 0.10.2"
-hyper-native-tls = "*"
 clap = "*"
+futures = "*"
+hyper = ">= 0.10.2"
+hyper-tls = "0.1.1"
+tokio-core = "0.1.8"
