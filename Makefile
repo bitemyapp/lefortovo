@@ -1,14 +1,38 @@
+package = lefortovo
+
+env = OPENSSL_INCLUDE_DIR="/usr/local/opt/openssl/include"
+cargo = $(env) cargo
+debug-env = RUST_BACKTRACE=1 RUST_LOG=$(package)=debug
+debug-cargo = $(env) $(debug-env) cargo
+
 build:
-	OPENSSL_INCLUDE_DIR=/usr/local/opt/openssl/include cargo build
+	$(cargo) build
 
-run:
-	./target/debug/lefortovo --lang Haskell
+build-release:
+	$(cargo) build --release
 
-fmt:
-	RUST_BACKTRACE=1 cargo fmt
+run: build
+	./target/debug/$(package)
+
+install:
+	$(cargo) install
 
 test:
-	RUST_BACKTRACE=1 cargo test
+	$(cargo) test
 
-testv:
-	RUST_BACKTRACE=1 cargo test -- --nocapture
+test-debug:
+	$(debug-cargo) test -- --nocapture
+
+fmt:
+	$(cargo) fmt
+
+watch:
+	$(cargo) watch -- cargo build
+
+# You need nightly for rustfmt at the moment
+dev-deps:
+	cargo install fmt
+	cargo install rustfmt-nightly
+
+.PHONY : build build-release run install test test-debug fmt watch dev-deps
+
