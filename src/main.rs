@@ -6,6 +6,7 @@ extern crate tokio_core;
 
 use clap::{Arg, App};
 use futures::{Future, Stream};
+// use futures::future::Future;
 
 use std::str;
 
