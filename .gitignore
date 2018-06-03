@@ -8,3 +8,8 @@ Cargo.lock
 
 # Ignore weird backup files
 *.bk
+
+# ignore intellij stuff because Aidan is a scrub
+.idea/
+*.iml
+target/
