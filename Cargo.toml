@@ -4,8 +4,9 @@ version = "0.1.0"
 authors = ["callen"]
 
 [dependencies]
+bytes = "0.4.8"
 clap = "*"
-futures = "0.1.17"
-hyper = ">= 0.11, < 0.12" 
-hyper-tls = "0.1.1"
-tokio-core = "0.1.8"
+hyper = ">= 0.12.1"
+hyper-tls = "0.2.0"
+pretty_env_logger = "*"
+tokio-core = ">= 0.1.17"

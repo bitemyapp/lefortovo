@@ -1,13 +1,14 @@
 extern crate clap;
-extern crate futures;
 extern crate hyper;
 extern crate hyper_tls;
+extern crate pretty_env_logger;
 extern crate tokio_core;
 
 use clap::{App, Arg};
-use futures::{Future, Stream};
-// use futures::future::Future;
-
+use hyper::Client;
+use hyper::rt::{self, Future, Stream};
+use hyper_tls::HttpsConnector;
+use std::io::{self, Write};
 use std::str;
 
 fn build_gitignore_url(pl: &str) -> String {
@@ -25,25 +26,26 @@ fn build_makefile_url(pl: &str) -> String {
 }
 
 fn get_from_github(url: hyper::Uri) {
-    let mut core = tokio_core::reactor::Core::new().unwrap();
-    let handle = core.handle();
-    let client = hyper::Client::configure()
-        .connector(hyper_tls::HttpsConnector::new(4, &handle).unwrap())
-        .build(&handle);
-    let mut s = String::new();
-    {
-        let work = client.get(url).and_then(|res| {
-            res.body().for_each(|chunk| {
-                s.push_str(str::from_utf8(&*chunk).unwrap());
-                futures::future::ok(())
+    rt::run(rt::lazy(move || {
+        let https = HttpsConnector::new(4).expect("TLS initialization failed");
+        let client = Client::builder()
+            .build::<_, hyper::Body>(https);
+        client
+            .get(url)
+            .and_then(|res| {
+                res.into_body().for_each(|chunk| {
+                    io::stdout().write_all(&chunk)
+                        .map_err(|e| panic!("example expects stdout is open, error={}", e))
+                })
             })
-        });
-        core.run(work).unwrap();
-    }
-    println!("{}", s);
+            .map_err(|err| {
+                eprintln!("Error {}", err);
+            })
+    }));
 }
 
 fn main() {
+    pretty_env_logger::init();
     let matches = App::new("lefortovo")
         .version("1.0")
         .author("Chris Allen <cma@bitemyapp.com>")
