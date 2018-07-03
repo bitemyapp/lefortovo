@@ -2,10 +2,11 @@
 name = "lefortovo"
 version = "0.1.0"
 authors = ["callen"]
+license = "Apache-2.0"
 
 [dependencies]
 clap = "*"
 futures = "0.1.17"
-hyper = ">= 0.11"
+hyper = ">= 0.12"
 hyper-tls = "0.1.1"
 tokio-core = "0.1.8"
