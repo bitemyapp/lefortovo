@@ -1,14 +1,5 @@
-extern crate clap;
-extern crate hyper;
-extern crate hyper_tls;
-extern crate pretty_env_logger;
-extern crate tokio_core;
-
 use clap::{App, Arg};
-use hyper::Client;
-use hyper::rt::{self, Future, Stream};
-use hyper_tls::HttpsConnector;
-use std::io::{self, Write};
+use reqwest;
 use std::str;
 
 fn build_gitignore_url(pl: &str) -> String {
@@ -25,29 +16,17 @@ fn build_makefile_url(pl: &str) -> String {
     )
 }
 
-fn get_from_github(url: hyper::Uri) {
-    rt::run(rt::lazy(move || {
-        let https = HttpsConnector::new(4).expect("TLS initialization failed");
-        let client = Client::builder()
-            .build::<_, hyper::Body>(https);
-        client
-            .get(url)
-            .and_then(|res| {
-                res.into_body().for_each(|chunk| {
-                    io::stdout().write_all(&chunk)
-                        .map_err(|e| panic!("example expects stdout is open, error={}", e))
-                })
-            })
-            .map_err(|err| {
-                eprintln!("Error {}", err);
-            })
-    }));
+async fn get_from_github(url: &str) -> Result<(), reqwest::Error> {
+    let body = reqwest::get(url).await?.text().await?;
+    println!("{}", body);
+    Ok(())
 }
 
-fn main() {
+#[tokio::main]
+async fn main() -> Result<(), Box<dyn std::error::Error>> {
     pretty_env_logger::init();
     let matches = App::new("lefortovo")
-        .version("1.0")
+        .version("1.1")
         .author("Chris Allen <cma@bitemyapp.com>")
         .about("For putting things in a hole where they are forgotten")
         .arg(
@@ -82,12 +61,13 @@ fn main() {
     let gitignore = matches.is_present("gitignore");
     let makefile = matches.is_present("makefile");
 
-    let url = match (gitignore, makefile) {
+    let url: String = match (gitignore, makefile) {
         (true, true) => panic!("You must pick gitignore or makefile, not both!"),
         (true, false) => build_gitignore_url(lang).parse().unwrap(),
         (false, true) => build_makefile_url(lang).parse().unwrap(),
         (false, false) => build_gitignore_url(lang).parse().unwrap(),
     };
 
-    get_from_github(url);
+    get_from_github(&url).await?;
+    Ok(())
 }

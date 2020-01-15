@@ -3,11 +3,13 @@ name = "lefortovo"
 version = "0.1.0"
 authors = ["callen"]
 license = "Apache-2.0"
+edition = "2018"
 
 [dependencies]
-bytes = "0.4.8"
-clap = "*"
-hyper = ">= 0.12.1"
-hyper-tls = "0.3.2"
-pretty_env_logger = "*"
-tokio-core = ">= 0.1.17"
+bytes = "0.5.3"
+clap = "2.33.0"
+# hyper = "0.13.1"
+# hyper-tls = "0.4.1"
+pretty_env_logger = "0.3.1"
+reqwest = "0.10.1"
+tokio = { version = "0.2", features = ["full"] }
