@@ -35,4 +35,3 @@ dev-deps:
 	cargo install rustfmt-nightly
 
 .PHONY : build build-release run install test test-debug fmt watch dev-deps
-
